@@ -232,17 +232,54 @@ function closeModal() {
 }
 function closeModalOutside(e) {
   if (e.target === document.getElementById('modal')) closeModal();
-}
-function submitWaitlist() {
-  const name  = document.getElementById('wl-name').value.trim();
-  const email = document.getElementById('wl-email').value.trim();
+   
+async function submitWaitlist() {
+  const name    = document.getElementById('wl-name').value.trim();
+  const email   = document.getElementById('wl-email').value.trim();
+  const phone   = document.getElementById('wl-phone').value.trim();
+  const city    = document.getElementById('wl-city').value;
+  const fruit   = document.getElementById('wl-fruit').value;
+  const message = document.getElementById('wl-message').value.trim();
+
   if (!name || !email) {
     alert(currentLang === 'bn' ? 'নাম ও ইমেইল প্রয়োজন।' : 'Please enter your name and email.');
     return;
   }
-  // In production, POST to your backend / Google Sheets here
-  document.getElementById('modal-form').style.display  = 'none';
-  document.getElementById('modal-success').style.display = 'block';
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_key: '8ffd32cc-a477-4aee-86e0-588493980046',   // ← paste your key here
+        subject: '🌳 New আমারগাছ Waitlist Signup',
+        name,
+        email,
+        phone,
+        city,
+        fruit,
+        message
+      })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('modal-form').style.display = 'none';
+      document.getElementById('modal-success').style.display = 'block';
+    } else {
+      alert('Something went wrong. Please try again.');
+      btn.textContent = currentLang === 'bn' ? 'স্পট নিশ্চিত করুন →' : 'Secure My Spot →';
+      btn.disabled = false;
+    }
+  } catch (err) {
+    alert('Network error. Please check your connection.');
+    btn.textContent = currentLang === 'bn' ? 'স্পট নিশ্চিত করুন →' : 'Secure My Spot →';
+    btn.disabled = false;
+  }
 }
 
 // ── HAMBURGER ──
