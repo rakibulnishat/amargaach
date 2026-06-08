@@ -232,6 +232,9 @@ function closeModal() {
 }
 function closeModalOutside(e) {
   if (e.target === document.getElementById('modal')) closeModal();
+}                                   // ← this closing brace is missing
+
+async function submitWaitlist() {
    
 async function submitWaitlist() {
   const name    = document.getElementById('wl-name').value.trim();
