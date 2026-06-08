@@ -207,8 +207,8 @@ function applyLang(l) {
 
   // placeholders
   const ph = (sel, val) => { const el = document.querySelector(sel); if (el) el.placeholder = val; };
-  ph('#wl-name',    l === 'bn' ? 'আপনার পুরো নাম'    : 'Your full name');
-  ph('#wl-email',   l === 'bn' ? 'ইমেইল ঠিকানা'      : 'Email address');
+  ph('#wl-name',    l === 'bn' ? 'আপনার পুরো নাম'     : 'Your full name');
+  ph('#wl-email',   l === 'bn' ? 'ইমেইল ঠিকানা'       : 'Email address');
   ph('#wl-phone',   l === 'bn' ? 'ফোন নম্বর (ঐচ্ছিক)' : 'Phone number (optional)');
   ph('#wl-message', l === 'bn' ? 'কোনো প্রশ্ন আছে?'   : 'Any questions or special requests?');
 
@@ -226,14 +226,17 @@ function openModal() {
   document.getElementById('modal').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
+
 function closeModal() {
   document.getElementById('modal').classList.remove('active');
   document.body.style.overflow = '';
 }
+
 function closeModalOutside(e) {
   if (e.target === document.getElementById('modal')) closeModal();
-}                                   // ← this closing brace is missing
-   
+}
+
+// ── WAITLIST FORM (Web3Forms) ──
 async function submitWaitlist() {
   const name    = document.getElementById('wl-name').value.trim();
   const email   = document.getElementById('wl-email').value.trim();
@@ -256,7 +259,7 @@ async function submitWaitlist() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        access_key: '8ffd32cc-a477-4aee-86e0-588493980046',   // ← paste your key here
+        access_key: '8ffd32cc-a477-4aee-86e0-588493980046',
         subject: '🌳 New আমারগাছ Waitlist Signup',
         name,
         email,
@@ -273,12 +276,12 @@ async function submitWaitlist() {
       document.getElementById('modal-success').style.display = 'block';
     } else {
       alert('Something went wrong. Please try again.');
-      btn.textContent = currentLang === 'bn' ? 'স্পট নিশ্চিত করুন →' : 'Secure My Spot →';
+      btn.textContent = currentLang === 'bn' ? 'আমার জায়গা নিশ্চিত করুন →' : 'Secure My Spot →';
       btn.disabled = false;
     }
   } catch (err) {
     alert('Network error. Please check your connection.');
-    btn.textContent = currentLang === 'bn' ? 'স্পট নিশ্চিত করুন →' : 'Secure My Spot →';
+    btn.textContent = currentLang === 'bn' ? 'আমার জায়গা নিশ্চিত করুন →' : 'Secure My Spot →';
     btn.disabled = false;
   }
 }
