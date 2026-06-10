@@ -61,10 +61,10 @@ h1, h2, h3, .serif {
   max-width: 520px; line-height: 1.7; margin-bottom: 3.5rem;
 }
 .fade-up {
-  opacity: 0; transform: translateY(30px);
-  transition: opacity 0.65s ease, transform 0.65s ease;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
 }
-.fade-up.visible { opacity: 1; transform: translateY(0); }
+.fade-up { opacity: 1 !important; transform: translateY(0) !important; }
 
 /* ── BUTTONS ── */
 .btn-primary {
