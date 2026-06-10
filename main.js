@@ -236,8 +236,8 @@ function closeModalOutside(e) {
   if (e.target === document.getElementById('modal')) closeModal();
 }
 
-// ── WAITLIST FORM (Google Form) ──
-async function submitWaitlist() {
+// ── WAITLIST FORM (Google Form via hidden iframe) ──
+function submitWaitlist() {
   const name    = document.getElementById('wl-name').value.trim();
   const email   = document.getElementById('wl-email').value.trim();
   const phone   = document.getElementById('wl-phone').value.trim();
@@ -246,9 +246,74 @@ async function submitWaitlist() {
   const message = document.getElementById('wl-message').value.trim();
 
   if (!name || !email) {
-    alert(currentLang === 'bn' ? 'নাম ও ইমেইল প্রয়োজন।' : 'Please enter your name and email.');
+    alert(currentLang === 'bn' ? '\u09A8\u09BE\u09AE \u0993 \u0987\u09AE\u09C7\u0987\u09B2 \u09AA\u09CD\u09B0\u09AF\u09BC\u09CB\u099C\u09A8\u0964' : 'Please enter your name and email.');
     return;
   }
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Sending\u2026';
+  btn.disabled = true;
+
+  const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScn12yHZiv4hv1wL4H1L_RQ2paunJY3i3XpXixMVrElhcBhwg/formResponse';
+
+  // Hidden iframe to receive Google Forms response (avoids CORS error)
+  let iframe = document.getElementById('gform-iframe');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id   = 'gform-iframe';
+    iframe.name = 'gform-iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+
+  // Remove old hidden form if exists
+  const old = document.getElementById('gform-hidden');
+  if (old) old.remove();
+
+  // Build hidden form targeting the iframe
+  const form = document.createElement('form');
+  form.id     = 'gform-hidden';
+  form.method = 'POST';
+  form.action = FORM_ACTION;
+  form.target = 'gform-iframe';
+  form.style.display = 'none';
+
+  const fields = {
+    'entry.1178827020': name,
+    'entry.281762527':  email,
+    'entry.1696503117': phone,
+    'entry.1704910795': city,
+    'entry.1223106990': fruit,
+    'entry.13257717':   message
+  };
+
+  Object.entries(fields).forEach(([key, val]) => {
+    const input = document.createElement('input');
+    input.type  = 'hidden';
+    input.name  = key;
+    input.value = val;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+
+  // Show success when iframe loads Google's confirmation page
+  iframe.onload = function () {
+    document.getElementById('modal-form').style.display = 'none';
+    document.getElementById('modal-success').style.display = 'block';
+    iframe.onload = null;
+  };
+
+  form.submit();
+
+  // Fallback: show success after 2s if onload doesn't fire
+  setTimeout(function () {
+    if (document.getElementById('modal-form').style.display !== 'none') {
+      document.getElementById('modal-form').style.display = 'none';
+      document.getElementById('modal-success').style.display = 'block';
+    }
+  }, 2000);
+}
 
   const btn = document.getElementById('submit-btn');
   btn.textContent = 'Sending…';
