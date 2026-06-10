@@ -236,17 +236,47 @@ function closeModalOutside(e) {
   if (e.target === document.getElementById('modal')) closeModal();
 }
 
-function submitWaitlist() {
-  const name  = document.getElementById('wl-name').value.trim();
-  const email = document.getElementById('wl-email').value.trim();
+// ── WAITLIST FORM (Google Form) ──
+async function submitWaitlist() {
+  const name    = document.getElementById('wl-name').value.trim();
+  const email   = document.getElementById('wl-email').value.trim();
+  const phone   = document.getElementById('wl-phone').value.trim();
+  const city    = document.getElementById('wl-city').value;
+  const fruit   = document.getElementById('wl-fruit').value;
+  const message = document.getElementById('wl-message').value.trim();
+
   if (!name || !email) {
     alert(currentLang === 'bn' ? 'নাম ও ইমেইল প্রয়োজন।' : 'Please enter your name and email.');
     return;
   }
-  // In production, POST to your backend / Google Sheets here
-  document.getElementById('modal-form').style.display  = 'none';
-  document.getElementById('modal-success').style.display = 'block';
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScn12yHZiv4hv1wL4H1L_RQ2paunJY3i3XpXixMVrElhcBhwg/formResponse';
+
+  const body = new FormData();
+  body.append('entry.1178827020', name);
+  body.append('entry.281762527',  email);
+  body.append('entry.1696503117', phone);
+  body.append('entry.1704910795', city);
+  body.append('entry.1223106990', fruit);
+  body.append('entry.13257717',   message);
+
+  try {
+    // Google Forms does not support CORS so we use no-cors — the request still saves
+    await fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body });
+    document.getElementById('modal-form').style.display = 'none';
+    document.getElementById('modal-success').style.display = 'block';
+  } catch (err) {
+    // no-cors fetch never throws on network errors, but just in case
+    alert('Network error. Please check your connection.');
+    btn.textContent = currentLang === 'bn' ? 'আমার জায়গা নিশ্চিত করুন →' : 'Secure My Spot →';
+    btn.disabled = false;
+  }
 }
+
 // ── HAMBURGER ──
 function toggleMenu() {
   const ham  = document.getElementById('hamburger');
